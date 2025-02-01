@@ -62,21 +62,26 @@ app.get('/', (request, response) => {
 
 
 app.get('/api/persons', (request, response) => {
+  Person.find({}).then(persons => {
     response.json(persons)
     })
+  })
 
-    app.get('/api/info', (request, response) => {
-        const count = persons.length;
-        const Time = new Date();
-        let msg = `Phonebook has info for ${count} people<br><br>${Time}`;
-        response.send(msg);
-        })
+app.get('/api/info', (request, response) => {
+  Person.find({}).then(persons => {
+  const count = persons.length;
+  const Time = new Date();
+  let msg = `Phonebook has info for ${count} people<br><br>${Time}`;
+  response.send(msg);
+  })
+  })
 
-    app.delete('/api/persons/:id', (request, response) => {
-        const id = request.params.id
-        persons = persons.filter(note => note.id !== id)  
-        response.status(204).end()
-          })
+app.delete('/api/persons/:id', (request, response) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+  })
 
 app.get('/api/persons/:id', (request, response) => {
     Person.findByid(request.params.id)
