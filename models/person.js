@@ -15,7 +15,7 @@ mongoose.connect(url)
 
 const noteSchema = new mongoose.Schema({
   name: String,
-  phone: Boolean,
+  number: String,
 })
 
 noteSchema.set('toJSON', {
