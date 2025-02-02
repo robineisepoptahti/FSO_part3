@@ -113,7 +113,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 
     app.put('/api/persons/:id', (request, response, next) => {
-      Person.findByIdAndUpdate(request.params.id)
+      Person.findByIdAndUpdate(request.params.id, { number: request.params.number})
       .then(person => 
         {
       if (person) {
