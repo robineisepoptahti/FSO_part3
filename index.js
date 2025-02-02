@@ -35,6 +35,7 @@ let persons = [
     }
 ]
 
+
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
   console.log('Path:  ', request.path)
@@ -43,16 +44,26 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'Content missing' })
+  } 
+  else if (error.status === 404)
+  {
+    return response.status(404).send({ error: 'Unknown endpoint' })
+  }
+  next(error)
+}
+
 const cors = require('cors')
 
-app.use(cors())
 
+app.use(cors())
 app.use(express.json())
 app.use(requestLogger)
 
-const unknownEndpoint = (request, response) => {
-  response.status(404).send({ error: 'unknown endpoint' })
-}
+
 
 app.get('/', (request, response) => {
   Person.find({}).then(persons => {
@@ -76,36 +87,59 @@ app.get('/api/info', (request, response) => {
   })
   })
 
-app.delete('/api/persons/:id', (request, response) => {
+
+app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
     .then(result => {
       response.status(204).end()
     })
+    .catch(error => next(error))
   })
 
-app.get('/api/persons/:id', (request, response) => {
-    Person.findByid(request.params.id)
+app.get('/api/persons/:id', (request, response, next) => {
+    Person.findById(request.params.id)
     .then(person => 
       {
     if (person) {
-        response.json(note)
+        response.json(person)
         } else {
-        response.status(404).end()
-      }
+        const error = new Error('Person not found')
+        error.status = 404
+        next(error)
+        }
       })
+      .catch(error => next(error))
     })
+
+
+    app.put('/api/persons/:id', (request, response, next) => {
+      Person.findByIdAndUpdate(request.params.id)
+      .then(person => 
+        {
+      if (person) {
+          response.json(person)
+          } else {
+          const error = new Error('Person not found')
+          error.status = 404
+          next(error)
+          }
+        })
+        .catch(error => next(error))
+      })
+
+
 
       const generateId = (max) => {
             return Math.floor(Math.random() * max);
           }
       
-      app.post('/api/persons', (request, response) => {
+      app.post('/api/persons', (request, response, next) => {
         const body = request.body
       
         if (!body.name || !body.number) {
-          return response.status(400).json({ 
-            error: 'content missing' 
-          })
+          const error = new Error('Content missing')
+          error.name = 'CastError'
+          next(error)
         }
         if (persons.find(entry => entry.name === body.name))
         {
@@ -126,6 +160,7 @@ app.get('/api/persons/:id', (request, response) => {
         })
       })
 
+      app.use(errorHandler)
 
       const PORT = process.env.PORT
       app.listen(PORT, () => {
