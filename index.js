@@ -113,7 +113,8 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 
     app.put('/api/persons/:id', (request, response, next) => {
-      Person.findByIdAndUpdate(request.params.id, { number: request.body.number})
+      const { number } = request.body;
+      Person.findByIdAndUpdate(request.params.id, { number })
       .then(person => 
         {
       if (person) {
