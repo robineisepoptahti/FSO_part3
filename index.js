@@ -117,7 +117,8 @@ app.get('/api/persons/:id', (request, response, next) => {
       .then(person => 
         {
       if (person) {
-          response.json(person)
+          updatedPerson = { ...person._doc, number: request.body.number}
+          response.json(updatedPerson)
           } else {
           const error = new Error('Person not found')
           error.status = 404
