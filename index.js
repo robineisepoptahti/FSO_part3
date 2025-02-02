@@ -50,9 +50,9 @@ const errorHandler = (error, request, response, next) => {
     return response.status(400).send({ error: 'Content missing' })
   } 
   else if (error.status === 404)
-  {
     return response.status(404).send({ error: 'Unknown endpoint' })
-  }
+  else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
   next(error)
 }
 
@@ -158,7 +158,7 @@ app.get('/api/persons/:id', (request, response, next) => {
       
         person.save().then(person => {
           response.json(person)
-        })
+        }).catch(error => next(error))
       })
 
       app.use(errorHandler)
