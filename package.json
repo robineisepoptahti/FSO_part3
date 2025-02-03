@@ -5,9 +5,11 @@
     "scripts": {
         "start": "node index.js",
         "dev": "nodemon index.js",
+
         "test": "echo \"Error: no test specified\" && exit 1",
         "build:ui": "rm -rf dist && cd ../frontend && npm run build && cp -r dist ../backend",
-        "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+        "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+        "lint": "eslint ."
     },
     "author": "Robin Widjeskog",
     "license": "MIT",
@@ -19,5 +21,11 @@
         "mongoose": "^8.9.6",
         "morgan": "^1.10.0",
         "nodemon": "^3.1.7"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.19.0",
+        "@stylistic/eslint-plugin-js": "^3.0.1",
+        "eslint": "^9.19.0",
+        "globals": "^15.14.0"
     }
 }
