@@ -113,11 +113,11 @@ app.get('/api/persons/:id', (request, response, next) => {
 
 
     app.put('/api/persons/:id', (request, response, next) => {
-      Person.findByIdAndUpdate(request.params.id, { number: request.body.number})
+      Person.findByIdAndUpdate(request.params.id, { number: request.body.number}, { new: true, runValidators: true, context: 'query' })
       .then(person => 
         {
       if (person) {
-          updatedPerson = { ...person._doc, number: request.body.number}
+          updatedPerson = { ...person._doc, number: request.body.number, }
           response.json(updatedPerson)
           } else {
           const error = new Error('Person not found')
